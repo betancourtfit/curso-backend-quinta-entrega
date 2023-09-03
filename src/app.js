@@ -1,25 +1,36 @@
-import express from 'express';
-// import prodsRouter from './routes/products.routes.js';
-// import cartsRouter from './routes/carts.routes.js'; 
+//node_module
+import express from 'express'
+import mongoose from 'mongoose'
 import { engine } from 'express-handlebars';
-import { __dirname } from './path.js';
 import { Server }  from 'socket.io'
+import dotenv from 'dotenv';
 
-import { ProductManager } from './models/products.js';
-const manager = new ProductManager();
+//Importacion de rutas
+import userRouter from './routes/users.routes.js'
+import productRouter from './routes/products.routes.js'
+import cartRouter from './routes/carts.routes.js'
+import messageRouter from './routes/messages.routes.js'
+import router from './routes/views.routes.js'
 
+//Importacion de otros modulo
+import { __dirname } from './path.js';
+import { messageModel } from "./models/messages.models.js"
 import path from 'path';
 
-import router from './routes/views.router.js';
+//Setup inicial
 const viewsRouter = router;
-
-// Server
+dotenv.config();
 const app = express()
-const PORT = 8080
+const PORT = 4000
 
-const server = app.listen(PORT, () => {
-    console.log(`Server on port ${PORT}`)
+const server =  app.listen(PORT, () => {
+    console.log(`Server on Port ${PORT}`)
 })
+
+// conexion a la base de datos de mongodb
+mongoose.connect(`mongodb+srv://curso_backend_juan:${process.env.passmongodb}@cluster0.c47d4cv.mongodb.net/?retryWrites=true&w=majority`)
+    .then(() => console.log('BDD conectada'))
+    .catch(() => console.log('Error en conexion a BDD'))
 
 //Middleware
 app.use(express.json())
@@ -29,51 +40,42 @@ app.engine('handlebars', engine()) //Defino que motor de plantillas voy a utiliz
 app.set('view engine', 'handlebars') //Setting de mi app de hbs
 app.set('views', path.resolve(__dirname, './views')) //Resolver rutas absolutas a traves de rutas relativas
 app.use('/static', express.static(path.join(__dirname, '/public'))) //Unir rutas en una sola concatenandolas
-app.use('/realtimeproducts', express.static(path.join(__dirname, '/public')))
+// app.use('/realtimeproducts', express.static(path.join(__dirname, '/public')))
 
 // Server de socket.io
 const io = new Server(server);
-const prods = [];
 
 io.on('connection', (socket)=> {
     console.log('servidor de socket io conectado')
 
-    socket.on('nuevoProducto', async (nuevoProd) => {
-        const { title, description, price, thumbnail, code, stock } = nuevoProd;
-        await manager.addProduct(title, description, price, thumbnail, code, stock);
-        const products = await manager.getProducts();
-        socket.emit('products-data', products);
+    socket.on('add-message', async ({email, mensaje}) => {
+        console.log(mensaje)
+        await messageModel.create({email: email, message: mensaje})
+        const messages = await messageModel.find();
+        socket.emit('show-messages', messages);
     })
 
-    socket.on('update-products', async () => {
-        const products = await manager.getProducts();
-        socket.emit('products-data', products);
-    });
-
-    socket.on('remove-product', async (code) => {
-        console.log("inicio remove socket")
-        await manager.removeProduct(code) ;
-        const products = await manager.getProducts();
-        socket.emit('products-data', products);
+    socket.on('display-inicial', async() =>{
+        const messages = await messageModel.find();
+        socket.emit('show-messages', messages);
     })
 })
 
 app.use('/',viewsRouter)
 
-app.get('/realtimeproducts', (req, res) => {
-    res.render('realTimeProducts', {
-        css: "style.css",
-        title: "Products",
-        js: "realTimeProducts.js"
-
-    })
-})
 
 app.get('/static', (req, res) => {
-    res.render('home', {
+    res.render('chat', {
         css: "style.css",
-        title: "Home",
-        js: "home.js"
+        title: "chat",
+        js: "chat.js"
 
     })
 })
+
+app.use('/api/users', userRouter)
+app.use('/api/products', productRouter)
+app.use('/api/carts', cartRouter)
+app.use('/api/message', messageRouter)
+
+
