@@ -23,6 +23,7 @@ dotenv.config();
 const app = express()
 const PORT = 4000
 
+
 const server =  app.listen(PORT, () => {
     console.log(`Server on Port ${PORT}`)
 })
@@ -68,7 +69,14 @@ app.get('/static', (req, res) => {
     res.render('chat', {
         css: "style.css",
         title: "chat",
-        js: "chat.js"
+        js: "chat.js",
+        apiKey: process.env.API_KEY,
+        authDomain: process.env.AUTH_DOMAIN,
+        projectId: process.env.PROJECT_ID,
+        storageBucket: process.env.STORAGE_BUCKET,
+        messagingSenderId: process.env.MESSAGING_SENDER_ID,
+        appId: process.env.APP_ID,
+        measurementId: process.env.MEASUREMENT_ID
 
     })
 })
