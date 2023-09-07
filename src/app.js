@@ -15,6 +15,7 @@ import router from './routes/views.routes.js'
 //Importacion de otros modulo
 import { __dirname } from './path.js';
 import { messageModel } from "./models/messages.models.js"
+import { productModel } from './models/products.models.js';
 import path from 'path';
 
 //Setup inicial
@@ -40,7 +41,7 @@ app.engine('handlebars', engine()) //Defino que motor de plantillas voy a utiliz
 app.set('view engine', 'handlebars') //Setting de mi app de hbs
 app.set('views', path.resolve(__dirname, './views')) //Resolver rutas absolutas a traves de rutas relativas
 app.use('/static', express.static(path.join(__dirname, '/public'))) //Unir rutas en una sola concatenandolas
-// app.use('/realtimeproducts', express.static(path.join(__dirname, '/public')))
+app.use('/realtimeproducts', express.static(path.join(__dirname, '/public')))
 
 // Server de socket.io
 const io = new Server(server);
@@ -59,6 +60,31 @@ io.on('connection', (socket)=> {
         const messages = await messageModel.find();
         socket.emit('show-messages', messages);
     })
+
+    socket.on('add-product', async (nuevoProd) => {
+        const { title, description, price, code, stock, category } = nuevoProd;
+        await productModel.create({title: title, description: description, price: price, code: code, stock: stock, category: category});
+        const products = await productModel.find();
+        socket.emit('show-products', products);
+    })
+
+    socket.on('update-products', async () => {
+        const products = await productModel.find();
+        console.log(products)
+        socket.emit('show-products', products);
+    });
+
+    socket.on('remove-product', async ({ code }) => {
+        try {
+            console.log("inicio remove socket")
+            await productModel.deleteOne({ code: code });
+            const products = await productModel.find();
+            socket.emit('show-products', products);
+        }catch (error) {
+            console.error('Error eliminando producto:', error);
+        }
+
+    })
 })
 
 app.use('/',viewsRouter)
@@ -69,6 +95,15 @@ app.get('/static', (req, res) => {
         css: "style.css",
         title: "chat",
         js: "chat.js"
+
+    })
+})
+
+app.get('/realtimeproducts', (req, res) => {
+    res.render('realTimeProducts', {
+        css: "style.css",
+        title: "Products",
+        js: "realTimeProducts.js"
 
     })
 })

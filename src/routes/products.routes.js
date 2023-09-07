@@ -36,11 +36,12 @@ productRouter.post('/', async (req, res) => {
     }
 })
 
-productRouter.put('/:id', async (req, res) => {
-    const {id} = req.params
-    const {title, description, code, price, status, stock, category, thumbnail} = req.body
+productRouter.put('/:code', async (req, res) => {
+    const { code } = req.params;
+    console.log(code)
+    const {title, description, price, status, stock, category} = req.body
     try {
-        const product = await productModel.findByIdAndUpdate(id, {title, description, code, price, status, stock, category, thumbnail});
+        const product = await productModel.findOneAndUpdate({ code: code }, { title, description, price, code,  stock, category, status}, { new: true });
         if (product)
             res.status(200).send({respuesta: 'ok product updated', mensaje: product})
         else 
