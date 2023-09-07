@@ -6,10 +6,6 @@ import { Server }  from 'socket.io'
 import dotenv from 'dotenv';
 
 //Importacion de rutas
-import userRouter from './routes/users.routes.js'
-import productRouter from './routes/products.routes.js'
-import cartRouter from './routes/carts.routes.js'
-import messageRouter from './routes/messages.routes.js'
 import router from './routes/views.routes.js'
 
 //Importacion de otros modulo
@@ -89,28 +85,5 @@ io.on('connection', (socket)=> {
 
 app.use('/',viewsRouter)
 
-
-// app.get('/static', (req, res) => {
-//     res.render('chat', {
-//         css: "style.css",
-//         title: "chat",
-//         js: "chat.js"
-
-//     })
-// })
-
-// app.get('/realtimeproducts', (req, res) => {
-//     res.render('realTimeProducts', {
-//         css: "style.css",
-//         title: "Products",
-//         js: "realTimeProducts.js"
-
-//     })
-// })
-
-app.use('/api/users', userRouter)
-app.use('/api/products', productRouter)
-app.use('/api/carts', cartRouter)
-app.use('/api/message', messageRouter)
 
 
