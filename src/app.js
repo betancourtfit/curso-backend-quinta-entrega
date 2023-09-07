@@ -90,23 +90,23 @@ io.on('connection', (socket)=> {
 app.use('/',viewsRouter)
 
 
-app.get('/static', (req, res) => {
-    res.render('chat', {
-        css: "style.css",
-        title: "chat",
-        js: "chat.js"
+// app.get('/static', (req, res) => {
+//     res.render('chat', {
+//         css: "style.css",
+//         title: "chat",
+//         js: "chat.js"
 
-    })
-})
+//     })
+// })
 
-app.get('/realtimeproducts', (req, res) => {
-    res.render('realTimeProducts', {
-        css: "style.css",
-        title: "Products",
-        js: "realTimeProducts.js"
+// app.get('/realtimeproducts', (req, res) => {
+//     res.render('realTimeProducts', {
+//         css: "style.css",
+//         title: "Products",
+//         js: "realTimeProducts.js"
 
-    })
-})
+//     })
+// })
 
 app.use('/api/users', userRouter)
 app.use('/api/products', productRouter)
