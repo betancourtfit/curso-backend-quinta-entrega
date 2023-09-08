@@ -6,7 +6,8 @@ import { Server }  from 'socket.io'
 import dotenv from 'dotenv';
 
 //Importacion de rutas
-import router from './routes/views.routes.js'
+import viewRouter from './routes/views.routes.js'
+import apiRouter from './routes/apis.routes.js';
 
 //Importacion de otros modulo
 import { __dirname } from './path.js';
@@ -15,7 +16,8 @@ import { productModel } from './dao/models/products.models.js';
 import path from 'path';
 
 //Setup inicial
-const viewsRouter = router;
+const viewsRouter = viewRouter;
+const apisRouter = apiRouter;
 dotenv.config();
 const app = express()
 const PORT = 4000
@@ -84,6 +86,4 @@ io.on('connection', (socket)=> {
 })
 
 app.use('/',viewsRouter)
-
-
-
+app.use('/api',apisRouter)

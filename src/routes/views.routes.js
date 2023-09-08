@@ -1,12 +1,8 @@
 import express from "express";
-import userRouter from './users.routes.js';
-import productRouter from './products.routes.js';
-import cartRouter from './carts.routes.js';
-import messageRouter from './messages.routes.js';
 
-const router = express.Router();
+const viewsRouter = express.Router();
 
-router.get('/static', (req, res) => {
+viewsRouter.get('/static', (req, res) => {
     res.render('chat', {
         js: "chat.js",
         css: "home.css",
@@ -15,7 +11,7 @@ router.get('/static', (req, res) => {
     });
 })
 
-router.get('/realtimeproducts', (req, res) => {
+viewsRouter.get('/realtimeproducts', (req, res) => {
     res.render('realTimeProducts', {
         css: "style.css",
         title: "Products",
@@ -24,9 +20,5 @@ router.get('/realtimeproducts', (req, res) => {
     })
 })
 
-router.use('/api/users', userRouter)
-router.use('/api/products', productRouter)
-router.use('/api/carts', cartRouter)
-router.use('/api/message', messageRouter)
 
-export default router;
+export default viewsRouter;
