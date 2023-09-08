@@ -10,8 +10,8 @@ import router from './routes/views.routes.js'
 
 //Importacion de otros modulo
 import { __dirname } from './path.js';
-import { messageModel } from "./models/messages.models.js"
-import { productModel } from './models/products.models.js';
+import { messageModel } from "./dao/models/messages.models.js"
+import { productModel } from './dao/models/products.models.js';
 import path from 'path';
 
 //Setup inicial
